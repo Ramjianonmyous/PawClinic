@@ -151,17 +151,15 @@ export default function App() {
       <Partners />
       <About />
       <Services />
+      {token && <AIFeatures token={token} addToast={addToast} />}
       <WhyChooseUs />
       <Team />
       <Testimonials />
       <Contact onContactSubmit={handleContact} />
       
-      {/* AI Features & Dashboard Section */}
+      {/* Dashboard Section */}
       {token && (
-        <>
-          <AIFeatures token={token} addToast={addToast} />
-          
-          <section id="dashboard" className="py-24 bg-pri-50/20">
+        <section id="dashboard" className="py-24 bg-pri-50/20">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
               <p className="text-pri-600 font-semibold text-sm tracking-[.2em] uppercase mb-3">Management</p>
@@ -170,7 +168,6 @@ export default function App() {
             <Dashboard appointments={appointments} onDelete={handleDelete} />
           </div>
         </section>
-        </>
       )}
 
       <Footer />

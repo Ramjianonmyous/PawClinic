@@ -15,6 +15,7 @@ import ToastContainer from './components/ToastContainer'
 import BackToTop from './components/BackToTop'
 import Dashboard from './components/Dashboard'
 import Auth from './components/Auth'
+import AIFeatures from './components/AIFeatures'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -155,9 +156,12 @@ export default function App() {
       <Testimonials />
       <Contact onContactSubmit={handleContact} />
       
-      {/* Dashboard Section */}
+      {/* AI Features & Dashboard Section */}
       {token && (
-        <section id="dashboard" className="py-24 bg-pri-50/20">
+        <>
+          <AIFeatures token={token} addToast={addToast} />
+          
+          <section id="dashboard" className="py-24 bg-pri-50/20">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
               <p className="text-pri-600 font-semibold text-sm tracking-[.2em] uppercase mb-3">Management</p>
@@ -166,6 +170,7 @@ export default function App() {
             <Dashboard appointments={appointments} onDelete={handleDelete} />
           </div>
         </section>
+        </>
       )}
 
       <Footer />

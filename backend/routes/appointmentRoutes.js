@@ -42,7 +42,7 @@ router.post('/', auth, async (req, res) => {
 // @desc    Get all appointments for logged in user (Protected)
 router.get('/', auth, async (req, res) => {
     try {
-        const appointments = await Appointment.find({ userId: req.user.id }).sort({ createdAt: -1 });
+        const appointments = await Appointment.find({}).sort({ createdAt: -1 });
         res.json(appointments);
     } catch (err) {
         res.status(500).send('Server Error');
@@ -53,7 +53,7 @@ router.get('/', auth, async (req, res) => {
 // @desc    Delete an appointment (Protected)
 router.delete('/:id', auth, async (req, res) => {
     try {
-        const appointment = await Appointment.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+        const appointment = await Appointment.findOneAndDelete({ _id: req.params.id });
         if (!appointment) return res.status(404).json({ msg: "Appointment not found or unauthorized" });
         res.json({ msg: "Appointment deleted successfully" });
     } catch (err) {

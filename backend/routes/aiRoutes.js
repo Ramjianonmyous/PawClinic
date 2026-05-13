@@ -25,4 +25,17 @@ router.post('/save', auth, async (req, res) => {
   }
 });
 
+// @route   GET api/ai/history
+// @desc    Get user's AI queries
+// @access  Private
+router.get('/history', auth, async (req, res) => {
+  try {
+    const queries = await AIQuery.find({ userId: req.user.id }).sort({ createdAt: -1 });
+    res.json(queries);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router;

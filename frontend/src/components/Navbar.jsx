@@ -9,7 +9,7 @@ const links = [
   { label: 'Contact', href: '#contact' },
 ]
 
-export default function Navbar({ onOpenModal, user, onLogout, onOpenAuth, onOpenDashboard, onOpenSettings }) {
+export default function Navbar({ onOpenModal, user, onLogout, onOpenAuth, onOpenDashboard, onOpenSettings, onOpenAIFeatures }) {
   const { scrolled } = useScrollNav()
   const [menuOpen, setMenuOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -47,6 +47,9 @@ export default function Navbar({ onOpenModal, user, onLogout, onOpenAuth, onOpen
                   </button>
                   <button onClick={() => { onOpenSettings(); setDropdownOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2">
                     <i className="fa-solid fa-gear text-slate-400"></i> Settings
+                  </button>
+                  <button onClick={() => { onOpenAIFeatures(); setDropdownOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                    <i className="fa-solid fa-robot text-slate-400"></i> AI Features
                   </button>
                   <div className="border-t border-slate-100 my-1"></div>
                   <button onClick={() => { onLogout(); setDropdownOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-slate-50 flex items-center gap-2">

@@ -1,21 +1,15 @@
 import { useState, useCallback, useEffect } from 'react'
 import axios from 'axios'
 import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import Partners from './components/Partners'
-import About from './components/About'
-import Services from './components/Services'
-import WhyChooseUs from './components/WhyChooseUs'
-import Team from './components/Team'
-import Testimonials from './components/Testimonials'
-import Contact from './components/Contact'
+import Home from './components/Home'
+import AIFeatures from './components/AIFeatures'
 import Footer from './components/Footer'
 import Modal from './components/Modal'
 import ToastContainer from './components/ToastContainer'
 import BackToTop from './components/BackToTop'
 import Dashboard from './components/Dashboard'
 import Auth from './components/Auth'
-import AIFeatures from './components/AIFeatures'
+
 import SettingsModal from './components/SettingsModal'
 import SettingsPage from './components/SettingsPage'
 
@@ -26,6 +20,7 @@ export default function App() {
   const [authOpen, setAuthOpen] = useState(false)
   const [toasts, setToasts] = useState([])
   const [appointments, setAppointments] = useState([])
+  const [aiQueries, setAiQueries] = useState([])
   const [token, setToken] = useState(localStorage.getItem('token') || '')
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null)
   const [currentPage, setCurrentPage] = useState('home')
@@ -64,8 +59,23 @@ export default function App() {
     }
   };
 
+  const fetchAiQueries = async () => {
+    if (!token) return;
+    try {
+      const res = await axios.get(`${API_URL}/api/ai/history`, {
+        headers: { 'x-auth-token': token }
+      });
+      setAiQueries(res.data);
+    } catch (err) {
+      console.error("Failed to fetch AI queries");
+    }
+  };
+
+
+
   useEffect(() => {
     fetchAppointments();
+    fetchAiQueries();
   }, [token]);
 
   const handleLogin = (newToken, newUser) => {
@@ -80,6 +90,7 @@ export default function App() {
     setToken('');
     setUser(null);
     setAppointments([]);
+    setAiQueries([]);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     addToast('Logged out successfully');
@@ -134,39 +145,19 @@ export default function App() {
     setAiInput('');
     setAiLoading(true);
 
-    try {
-      const res = await axios.post(`${API_URL}/api/ai/chat`, { prompt: userMsg });
-      const aiReply = res.data.response;
+    setTimeout(() => {
+      const aiReply = `I understand you are asking about "${userMsg}". As an AI assistant, I recommend consulting one of our professional vets for specific advice. Is there anything else I can help with?`;
       
       setAiMessages(prev => [...prev, { role: 'ai', text: aiReply }]);
-      
-      // Check if AI suggests booking
-      if (aiReply.toLowerCase().includes('confirm') && aiReply.toLowerCase().includes('book')) {
-        addToast('AI suggested booking. Action not automated yet.', 'success');
-      }
-    } catch (error) {
-      console.error('Error in AI chat:', error);
-      setAiMessages(prev => [...prev, { role: 'ai', text: 'Sorry, I encountered an error. Please try again.' }]);
-    } finally {
       setAiLoading(false);
-    }
+    }, 1000);
   };
 
   return (
     <>
-      <Navbar onOpenModal={() => setModalOpen(true)} user={user} onLogout={handleLogout} onOpenAuth={() => setAuthOpen(true)} onOpenDashboard={() => setCurrentPage('dashboard')} onOpenSettings={() => setCurrentPage('settings')} />
+      <Navbar onOpenModal={() => setModalOpen(true)} user={user} onLogout={handleLogout} onOpenAuth={() => setAuthOpen(true)} onOpenDashboard={() => setCurrentPage('dashboard')} onOpenSettings={() => setCurrentPage('settings')} onOpenAIFeatures={() => setCurrentPage('ai-features')} />
       {currentPage === 'home' && (
-        <>
-          <Hero />
-          <Partners />
-          <About />
-          <Services />
-          {token && <AIFeatures token={token} addToast={addToast} />}
-          <WhyChooseUs />
-          <Team />
-          <Testimonials />
-          <Contact onContactSubmit={handleContact} />
-        </>
+        <Home token={token} addToast={addToast} handleContact={handleContact} onOpenAIFeatures={() => setCurrentPage('ai-features')} />
       )}
 
       {currentPage === 'dashboard' && (
@@ -179,7 +170,7 @@ export default function App() {
               <p className="text-pri-600 font-semibold text-sm tracking-[.2em] uppercase mb-3">Management</p>
               <h2 className="font-display text-4xl text-pri-900">Your Appointments</h2>
             </div>
-            <Dashboard appointments={appointments} onDelete={handleDelete} />
+            <Dashboard appointments={appointments} onDelete={handleDelete} aiQueries={aiQueries} />
           </div>
         </div>
       )}
@@ -195,6 +186,17 @@ export default function App() {
             </div>
             <SettingsPage user={user} token={token} addToast={addToast} onUpdateUser={handleUpdateUser} />
           </div>
+        </div>
+      )}
+
+      {currentPage === 'ai-features' && (
+        <div className="mt-20">
+          <div className="max-w-7xl mx-auto px-6 pt-6">
+            <button onClick={() => setCurrentPage('home')} className="text-pri-600 hover:text-pri-700 flex items-center gap-2 font-medium">
+              <i className="fa-solid fa-arrow-left"></i> Back to Home
+            </button>
+          </div>
+          <AIFeatures token={token} addToast={addToast} />
         </div>
       )}
 

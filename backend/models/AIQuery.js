@@ -11,8 +11,7 @@ const aiQuerySchema = new mongoose.Schema({
     required: true
   },
   input: {
-    type: String,
-    required: true
+    type: String
   },
   result: {
     type: String,

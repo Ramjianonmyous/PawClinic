@@ -3,13 +3,13 @@ import FloatingPaws from './FloatingPaws'
 
 export default function Hero() {
   return (
-    <section className="min-h-screen flex items-center pt-24 pb-16 relative overflow-hidden">
+    <section className="min-h-screen flex items-center pt-24 pb-16 relative overflow-hidden bg-white">
       <div className="max-w-7xl mx-auto px-6 w-full">
         <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
           <Reveal variant="left">
             <div className="relative">
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-pri-200/30">
-                <img src="https://z-cdn-media.chatglm.cn/files/a3259f6c-ee5d-4c50-beda-a98512d2d3f2.png?auth_key=1878524883-b74336c30aaf4ae8bb5896885641fdb5-0-643fca83a76d2e4966de9468d195140b" alt="Cute kitten at PawCare" className="w-full h-[420px] md:h-[520px] object-cover object-center" />
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-pri-200/30 bg-white">
+                <img src="/peeking_cat.png" alt="Cute kitten at PawCare" className="w-full h-[420px] md:h-[520px] object-cover object-center" />
                 <div className="absolute inset-0 bg-gradient-to-t from-pri-900/10 to-transparent" />
               </div>
               <FloatingPaws />

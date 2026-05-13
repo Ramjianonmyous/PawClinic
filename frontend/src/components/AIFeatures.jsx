@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-export default function AIFeatures({ token, addToast }) {
+export default function AIFeatures({ token, addToast, onFeatureClick }) {
   const [activeFeature, setActiveFeature] = useState(null); // 'prescription', 'symptom', 'summary'
   const [inputData, setInputData] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedImage(e.target.files[0]);
+      addToast('Image selected successfully!', 'success');
+    }
+  };
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   const handleProcess = async () => {
-    if (!inputData.trim()) {
-      addToast('Please enter some data to analyze.', 'warning');
+    if (!inputData.trim() && !selectedImage) {
+      addToast('Please enter data or upload an image to analyze.', 'warning');
       return;
     }
     setLoading(true);
@@ -20,10 +28,17 @@ export default function AIFeatures({ token, addToast }) {
       // For now, we simulate the AI response and save it to DB
       let simulatedResult = '';
       if (activeFeature === 'prescription') {
-        simulatedResult = `Prescription Analysis:
+        if (selectedImage) {
+          simulatedResult = `Prescription Analysis from Image (${selectedImage.name}):
 - Drug: Amoxicillin
 - Used for: Bacterial infections, ear infections, and skin infections in pets.
 - Dosage: Follow vet instructions carefully.`;
+        } else {
+          simulatedResult = `Prescription Analysis:
+- Drug: Amoxicillin
+- Used for: Bacterial infections, ear infections, and skin infections in pets.
+- Dosage: Follow vet instructions carefully.`;
+        }
       } else if (activeFeature === 'symptom') {
         simulatedResult = `Symptom Analysis for "${inputData}":
 - Potential Cause: Mild allergy or environmental irritation.
@@ -74,7 +89,15 @@ The patient shows normal vital signs. Blood work indicates a slight elevation in
           {/* Card 1: Prescription Analyzer */}
           <div 
             className={`cursor-pointer p-8 rounded-3xl border transition-all duration-300 ${activeFeature === 'prescription' ? 'border-teal-500 bg-teal-50/50 shadow-md' : 'border-slate-100 hover:border-teal-200 hover:shadow-sm'}`}
-            onClick={() => { setActiveFeature('prescription'); setResult(null); setInputData(''); }}
+            onClick={() => {
+              if (onFeatureClick) {
+                onFeatureClick('prescription');
+              } else {
+                setActiveFeature('prescription');
+                setResult(null);
+                setInputData('');
+              }
+            }}
           >
             <div className="w-12 h-12 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mb-6 text-xl">
               <i className="fas fa-file-prescription"></i>
@@ -86,7 +109,15 @@ The patient shows normal vital signs. Blood work indicates a slight elevation in
           {/* Card 2: Symptom Analyzer */}
           <div 
             className={`cursor-pointer p-8 rounded-3xl border transition-all duration-300 ${activeFeature === 'symptom' ? 'border-teal-500 bg-teal-50/50 shadow-md' : 'border-slate-100 hover:border-teal-200 hover:shadow-sm'}`}
-            onClick={() => { setActiveFeature('symptom'); setResult(null); setInputData(''); }}
+            onClick={() => {
+              if (onFeatureClick) {
+                onFeatureClick('symptom');
+              } else {
+                setActiveFeature('symptom');
+                setResult(null);
+                setInputData('');
+              }
+            }}
           >
             <div className="w-12 h-12 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mb-6 text-xl">
               <i className="fas fa-stethoscope"></i>
@@ -98,7 +129,15 @@ The patient shows normal vital signs. Blood work indicates a slight elevation in
           {/* Card 3: Report Summarizer */}
           <div 
             className={`cursor-pointer p-8 rounded-3xl border transition-all duration-300 ${activeFeature === 'summary' ? 'border-teal-500 bg-teal-50/50 shadow-md' : 'border-slate-100 hover:border-teal-200 hover:shadow-sm'}`}
-            onClick={() => { setActiveFeature('summary'); setResult(null); setInputData(''); }}
+            onClick={() => {
+              if (onFeatureClick) {
+                onFeatureClick('summary');
+              } else {
+                setActiveFeature('summary');
+                setResult(null);
+                setInputData('');
+              }
+            }}
           >
             <div className="w-12 h-12 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mb-6 text-xl">
               <i className="fas fa-file-medical-alt"></i>
@@ -112,10 +151,26 @@ The patient shows normal vital signs. Blood work indicates a slight elevation in
         {activeFeature && (
           <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100">
             <h4 className="text-lg font-bold text-slate-800 mb-4">
-              {activeFeature === 'prescription' && 'Enter Prescription Text'}
+              {activeFeature === 'prescription' && 'Enter Prescription Text or Upload Image'}
               {activeFeature === 'symptom' && 'Describe the Symptoms'}
               {activeFeature === 'summary' && 'Paste the Medical Report'}
             </h4>
+            
+            {activeFeature === 'prescription' && (
+              <div className="mb-4">
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 transition-colors"
+                  onChange={handleImageChange}
+                />
+                {selectedImage && (
+                  <p className="text-sm text-emerald-600 mt-2 flex items-center gap-1">
+                    <i className="fas fa-check-circle"></i> Selected: {selectedImage.name}
+                  </p>
+                )}
+              </div>
+            )}
             
             <textarea 
               className="w-full h-32 p-4 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-colors text-slate-700"

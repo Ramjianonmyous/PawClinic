@@ -9,9 +9,10 @@ const links = [
   { label: 'Contact', href: '#contact' },
 ]
 
-export default function Navbar({ onOpenModal, user, onLogout, onOpenAuth }) {
+export default function Navbar({ onOpenModal, user, onLogout, onOpenAuth, onOpenDashboard, onOpenSettings }) {
   const { scrolled } = useScrollNav()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const close = () => setMenuOpen(false)
 
   return (
@@ -25,15 +26,34 @@ export default function Navbar({ onOpenModal, user, onLogout, onOpenAuth }) {
         </a>
         <div className="hidden md:flex items-center gap-8">
           {links.map(l => <a key={l.href} href={l.href} className="text-sm font-medium text-slate-500 hover:text-pri-600 transition-colors">{l.label}</a>)}
-          {user && <a href="#dashboard" className="text-sm font-medium text-slate-500 hover:text-pri-600 transition-colors">Dashboard</a>}
         </div>
         <div className="hidden md:flex items-center gap-3">
           <button onClick={onOpenModal} className="px-5 py-2.5 bg-pri-600 text-white text-sm font-semibold rounded-full hover:bg-pri-700 transition-colors bs">Book Now</button>
           
           {user ? (
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-slate-700">Hi, {user.name}</span>
-              <button onClick={onLogout} className="px-5 py-2.5 border-2 border-pri-200 text-pri-700 text-sm font-semibold rounded-full hover:border-pri-600 hover:bg-pri-50 transition-all">Logout</button>
+            <div className="relative">
+              <button 
+                onClick={() => setDropdownOpen(!dropdownOpen)} 
+                className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-full hover:bg-slate-50 transition-colors"
+              >
+                <span className="text-sm font-medium text-slate-700">Hi, {user.name}</span>
+                <i className="fa-solid fa-chevron-down text-xs text-slate-500"></i>
+              </button>
+              
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-lg py-2 z-50">
+                  <button onClick={() => { onOpenDashboard(); setDropdownOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                    <i className="fa-solid fa-chart-line text-slate-400"></i> Dashboard
+                  </button>
+                  <button onClick={() => { onOpenSettings(); setDropdownOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                    <i className="fa-solid fa-gear text-slate-400"></i> Settings
+                  </button>
+                  <div className="border-t border-slate-100 my-1"></div>
+                  <button onClick={() => { onLogout(); setDropdownOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-slate-50 flex items-center gap-2">
+                    <i className="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <button onClick={onOpenAuth} className="px-5 py-2.5 border-2 border-pri-200 text-pri-700 text-sm font-semibold rounded-full hover:border-pri-600 hover:bg-pri-50 transition-all">Login</button>

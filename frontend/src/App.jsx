@@ -16,6 +16,8 @@ import BackToTop from './components/BackToTop'
 import Dashboard from './components/Dashboard'
 import Auth from './components/Auth'
 import AIFeatures from './components/AIFeatures'
+import SettingsModal from './components/SettingsModal'
+import SettingsPage from './components/SettingsPage'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -26,6 +28,12 @@ export default function App() {
   const [appointments, setAppointments] = useState([])
   const [token, setToken] = useState(localStorage.getItem('token') || '')
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null)
+  const [currentPage, setCurrentPage] = useState('home')
+
+  const handleUpdateUser = (updatedUser) => {
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
 
   // AI Chatbot State
   const [aiOpen, setAiOpen] = useState(false)
@@ -146,28 +154,48 @@ export default function App() {
 
   return (
     <>
-      <Navbar onOpenModal={() => setModalOpen(true)} user={user} onLogout={handleLogout} onOpenAuth={() => setAuthOpen(true)} />
-      <Hero />
-      <Partners />
-      <About />
-      <Services />
-      {token && <AIFeatures token={token} addToast={addToast} />}
-      <WhyChooseUs />
-      <Team />
-      <Testimonials />
-      <Contact onContactSubmit={handleContact} />
-      
-      {/* Dashboard Section */}
-      {token && (
-        <section id="dashboard" className="py-24 bg-pri-50/20">
+      <Navbar onOpenModal={() => setModalOpen(true)} user={user} onLogout={handleLogout} onOpenAuth={() => setAuthOpen(true)} onOpenDashboard={() => setCurrentPage('dashboard')} onOpenSettings={() => setCurrentPage('settings')} />
+      {currentPage === 'home' && (
+        <>
+          <Hero />
+          <Partners />
+          <About />
+          <Services />
+          {token && <AIFeatures token={token} addToast={addToast} />}
+          <WhyChooseUs />
+          <Team />
+          <Testimonials />
+          <Contact onContactSubmit={handleContact} />
+        </>
+      )}
+
+      {currentPage === 'dashboard' && (
+        <div className="py-24 bg-pri-50/20 min-h-screen mt-20">
           <div className="max-w-7xl mx-auto px-6">
+            <button onClick={() => setCurrentPage('home')} className="mb-6 text-pri-600 hover:text-pri-700 flex items-center gap-2 font-medium">
+              <i className="fa-solid fa-arrow-left"></i> Back to Home
+            </button>
             <div className="text-center mb-16">
               <p className="text-pri-600 font-semibold text-sm tracking-[.2em] uppercase mb-3">Management</p>
-              <h2 className="font-display text-4xl md:text-5xl text-pri-900">Your Appointments</h2>
+              <h2 className="font-display text-4xl text-pri-900">Your Appointments</h2>
             </div>
             <Dashboard appointments={appointments} onDelete={handleDelete} />
           </div>
-        </section>
+        </div>
+      )}
+
+      {currentPage === 'settings' && (
+        <div className="py-24 bg-pri-50/20 min-h-screen mt-20">
+          <div className="max-w-7xl mx-auto px-6">
+            <button onClick={() => setCurrentPage('home')} className="mb-6 text-pri-600 hover:text-pri-700 flex items-center gap-2 font-medium">
+              <i className="fa-solid fa-arrow-left"></i> Back to Home
+            </button>
+            <div className="text-center mb-16">
+              <h2 className="font-display text-4xl text-pri-900">User Settings</h2>
+            </div>
+            <SettingsPage user={user} token={token} addToast={addToast} onUpdateUser={handleUpdateUser} />
+          </div>
+        </div>
       )}
 
       <Footer />
